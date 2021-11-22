@@ -1,3 +1,5 @@
+import smtplib
+from email.message import EmailMessage
 def email_alert(message, to):
     # First create the message
     msg = EmailMessage()
