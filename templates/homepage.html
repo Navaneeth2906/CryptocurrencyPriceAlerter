@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Login</title>
+{% endblock %}
+{% block body %}
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{message}}
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+ </button>
+    </div>
+{% endfor %}
+<h2>Login</h2>
+</br>
+<form method = 'POST'>
+    {% if error %} <!-- If there is an error, the headings will turn red -->
+        <p style="color: red"><strong>Email:</strong></p>
+    {% else: %}
+        <p><strong>Email:</strong></p>
+    {% endif %}
+    <input type="text" name =  "Email">
+    </br>
+    </br>
+    {% if error %} <!-- If there is an error, the headings will turn red -->
+        <p style="color: red"><strong>Password:</strong></p>
+    {% else: %}
+        <p><strong>Password:</strong></p>
+    {% endif %}
+    <input name = "Password", type = "Password">
+    </br>
+    </br>
+    <input class="btn btn-primary" value = "Login" type = "Submit">
+</form>
+</br>
+<a class="btn btn-primary" href="/register" role="button">Register</a>
+{% endblock %}
+
+

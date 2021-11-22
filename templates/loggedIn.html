@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Welcome</title>
+{% endblock %}
+{% block body %}
+<h2>Welcome!</h2>
+<p>Prices of Cryptocurrencies:</p>
+{% for row in prices %}
+{{row}}
+</br>
+{% endfor %}
+</br>
+<form method = "POST">
+      <input value = "Refresh Data" class="btn btn-primary" type = "Submit">
+</form>
+</br>
+<p>Alerts that you have set:</p>
+{% for alert in alerts %}
+{{alert}}
+</br>
+{% endfor %}
+{% endblock %}
+
+
+
