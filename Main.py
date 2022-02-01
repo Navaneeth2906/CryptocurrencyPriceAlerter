@@ -1,22 +1,21 @@
-import smtplib
-from email.message import EmailMessage
-def email_alert(message, to):
-    # First create the message
-    msg = EmailMessage()
-    msg.set_content(message)  # Add content
-    msg['subject'] = 'Cryptocurrency Price Alert!'  # Add subject
-    msg['to'] = to  # Add recipient email
+from AlertMonitor import *
+from PriceMonitor import *
+from UserInterface import *
+import concurrent.futures
 
-    # Add sender details
-    user = "cryptocurrncy29@gmail.com"
-    msg["from"] = user
-    password = "budsglnjbtxewjza"
 
-    # Send the email using SMTP
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(user, password)
-    server.send_message(msg)
+def all_prices_check():
+    bitcoin = PriceMonitor('BTC')
+    ethereum = PriceMonitor('ETH')
+    litecoin = PriceMonitor('LTC')
+    dogecoin = PriceMonitor('DOGE')
+    while True:
+        bitcoin.update_price()
+        ethereum.update_price()
+        litecoin.update_price()
+        dogecoin.update_price()
+        time.sleep(10)
 
-    server.quit()
-email_alert('code works', 'navaneethmv7@gmail.com')
+
+executor = concurrent.futures.ThreadPoolExecutor()
+executor.submit(all_prices_check)

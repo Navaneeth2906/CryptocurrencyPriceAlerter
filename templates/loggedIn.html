@@ -1,25 +1,59 @@
 {% extends 'base.html' %}
+
 {% block head %}
-    <title>Welcome</title>
-{% endblock %}
-{% block body %}
-<h2>Welcome!</h2>
-<p>Prices of Cryptocurrencies:</p>
-{% for row in prices %}
-{{row}}
-</br>
-{% endfor %}
-</br>
-<form method = "POST">
-      <input value = "Refresh Data" class="btn btn-primary" type = "Submit">
-</form>
-</br>
-<p>Alerts that you have set:</p>
-{% for alert in alerts %}
-{{alert}}
-</br>
-{% endfor %}
+    <title>Main Page</title>
 {% endblock %}
 
+{% block body %}
+
+<div class="card" style="width: 50rem;" >
+<!-- Header for page -->
+<h1 class="card-header">Main Page</h1>
+<div class="card-body">
+
+<div style="float:left;">
+<!-- Display of the Current Prices -->
+<div class="card" style="width: 21rem;">
+<div class="card-header">
+<h4>Prices of Cryptocurrencies:</h4>
+</div>
+<ul class="list-group list-group-flush">
+    {% for row in prices %}
+        <li class="list-group-item">
+            <h5>{{row}}</h5>
+        </li>
+    {% endfor %}
+  </ul>
+</div>
+</br>
+<a href="/welcome" class="btn btn-success">Refresh Data</a>
+</br>
+</br>
+<a href="/" class="btn btn-primary">Logout</a>
+</div>
+
+<div style="float:right;">
+<!-- Display of Alerts -->
+<div class="card" style="width: 21rem;">
+<div class="card-header">
+<h4>Alerts that you have set:</h4>
+</div>
+<ul class="list-group list-group-flush">
+    {% for i in range(0, alerts|length) %}
+        <li class="list-group-item">
+            <h5>{{alerts[i]}}</h5>
+            <!-- Also have a delete button -->
+            <a href="/delete/{{ids[i]}}" class="btn btn-danger">Delete</a>
+        </li>
+    {% endfor %}
+</ul>
+</div>
+</br>
+<a href="/addAlerts" class="btn btn-primary">Add New Alerts</a>
+</div>
+
+</div>
+</div>
+{% endblock %}
 
 

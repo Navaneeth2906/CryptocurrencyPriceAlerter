@@ -1,39 +1,53 @@
 {% extends 'base.html' %}
+
 {% block head %}
 <title>Login</title>
 {% endblock %}
+
 {% block body %}
+
+<div class="card" style="width: 20rem;" >
+<!-- Header for page -->
+<h1 class="card-header">Login:</h1>
+<div class="card-body">
+
+<!-- flash an alert message if necessary-->
 {% for message in get_flashed_messages() %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{message}}
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
- </button>
+    {{message}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
     </div>
 {% endfor %}
-<h2>Login</h2>
-</br>
+
+<!-- Interface to Login -->
 <form method = 'POST'>
     {% if error %} <!-- If there is an error, the headings will turn red -->
-        <p style="color: red"><strong>Email:</strong></p>
+        <h4 style="color: red">Email:</h4>
     {% else: %}
-        <p><strong>Email:</strong></p>
+        <h4>Email:</h4>
     {% endif %}
     <input type="text" name =  "Email">
     </br>
     </br>
     {% if error %} <!-- If there is an error, the headings will turn red -->
-        <p style="color: red"><strong>Password:</strong></p>
+        <h4 style="color: red">Password:</h4>
     {% else: %}
-        <p><strong>Password:</strong></p>
+        <h4>Password:</h4>
     {% endif %}
     <input name = "Password", type = "Password">
     </br>
     </br>
     <input class="btn btn-primary" value = "Login" type = "Submit">
 </form>
+
 </br>
-<a class="btn btn-primary" href="/register" role="button">Register</a>
+
+<a class="btn btn-primary" href="/register" role="button">No Account? Register here</a>
+
+</div>
+</div>
 {% endblock %}
 
 

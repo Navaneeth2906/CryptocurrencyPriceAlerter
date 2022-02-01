@@ -5,36 +5,49 @@
 {% endblock %}
 
 {% block body %}
+
+<div class="card" style="width: 20rem;">
+<!-- Header for page -->
+<h1 class="card-header">Register:</h1>
+<div class="card-body">
+
+<!-- flash an alert message if necessary-->
 {% for message in get_flashed_messages() %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{message}}
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
- </button>
+    {{message}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
     </div>
 {% endfor %}
-<h2>Register</h2>
-</br>
+
+<!-- Interface to Register -->
 <form method = "POST">
   {% if error %} <!-- If there is an error, the headings will turn red -->
-    <p style="color: red"><strong>Email:</strong></p>
+    <h4 style="color: red">Email:</h4>
   {% else: %}
-    <p><strong>Email:</strong></p>
+    <h4>Email:</h4>
   {% endif %}
   <input name = "DEmail">
   </br>
      </br>
   {% if error %} <!-- If there is an error, the headings will turn red -->
-    <p style="color: red"><strong>Password:</strong></p>
+    <h4 style="color: red">Password:</h4>
   {% else: %}
-    <p><strong>Password:</strong></p>
+    <h4>Password:</h4>
   {% endif %}
   <input name = "DPassword", type = "Password">
   </br>
   </br>
   <input class="btn btn-primary" value = "Register" type = "Submit">
 </form>
+
 </br>
-<a class="btn btn-primary" href="/" role="button">Login</a>
+
+<a class="btn btn-primary" href="/" role="button">Have an account? Login here</a>
+
+</div>
+</div>
+
 {% endblock %}
 

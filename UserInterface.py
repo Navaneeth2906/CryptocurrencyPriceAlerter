@@ -1,5 +1,7 @@
 import sqlite3, random, datetime, bs4, requests
 from PriceMonitor import *
+from bs4 import BeautifulSoup
+
 
 class UserInterface():
 
@@ -7,20 +9,23 @@ class UserInterface():
         self.email = email
 
     def display_alerts(self):
-        # Retrieve all the messages of the alerts and return them
+        # Retrieve all the IDs and messages of the alerts and return them
         db = sqlite3.Connection("UsersAndAlerts.db")
         c = db.cursor()
-        c.execute('''SELECT Message FROM TPA WHERE Email = ? ''', (self.email,))
+        c.execute('''SELECT TPAID, Message FROM TPA WHERE Email = ? ''', (self.email,))
         tpaMs = c.fetchall()
-        c.execute('''SELECT Message FROM SPA WHERE Email = ? ''', (self.email,))
+        c.execute('''SELECT SPAID, Message FROM SPA WHERE Email = ? ''', (self.email,))
         spaMs = c.fetchall()
         db.close()
-        messages = []
-        for message in tpaMs:
-            messages.append(f'Alert me when {message[0]}')
-        for message in spaMs:
-            messages.append(f'Alert me when {message[0]}')
-        return messages
+        ids = []  # One list for the IDs
+        messages = []  # And another for the messages
+        for line in tpaMs:
+            ids.append(line[0])
+            messages.append(f'Alert me when {line[1]}')
+        for line in spaMs:
+            ids.append(line[0])
+            messages.append(f'Alert me when {line[1]}')
+        return ids, messages
 
     def add_alert_type1(self, coin, price):
         # First create a unique ID
@@ -30,17 +35,17 @@ class UserInterface():
         tpaIDs = c.fetchall()
         done = False
         while not done:
-            tpaID = '1' + coin[0:1] + str(price)[0:1] + self.email[0:1] + str(random.randint(0,9)) + str(random.randint(0,9))
+            tpaID = '1' + coin[0:1] + str(price)[0:1] + self.email[0:1] + str(random.randint(0, 9)) + str(
+                random.randint(0, 9))
             if tpaID not in tpaIDs:
                 done = True
         # Now create an appropriate message
-        message = f'the price of {coin} has reached ${price}'
+        message = f'the price of {coin} has reached ${price}.'
         # Now add everything to the database
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
         db.commit()
         db.close()
         return tpaID
-
 
     def add_alert_type2(self, coin, increasedOrDecreased, percentage):
         # First find the target price
@@ -50,7 +55,7 @@ class UserInterface():
         price = c.fetchall()[0][0]
         db.close()
         if increasedOrDecreased == "increased":
-            price += price * (percentage/100)
+            price += price * (percentage / 100)
         elif increasedOrDecreased == "decreased":
             price -= price * (percentage / 100)
         # Now create a unique ID
@@ -60,17 +65,20 @@ class UserInterface():
         tpaIDs = c.fetchall()
         done = False
         while not done:
-            tpaID = '2' + coin[0:1] + str(percentage)[0:1] + self.email[0:1] + str(random.randint(0,9)) + str(random.randint(0,9))
+            tpaID = '2' + coin[0:1] + str(percentage)[0:1] + self.email[0:1] + str(random.randint(0, 9)) + str(
+                random.randint(0, 9))
             if tpaID not in tpaIDs:
                 done = True
         # Now create the message
-        message = f'the price of {coin} has {increasedOrDecreased} by {percentage}% from the price on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
+        message = f'the price of {coin} has {increasedOrDecreased} by {percentage}% from the price on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.'
         # Now add everything to the database
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
         db.commit()
         db.close()
         return tpaID
 
+    '''
+    # Screen scraping with Digital Coin
     @staticmethod
     def highest_or_lowest(coin, daysAgo, highestOrLowest):  # Input currency and the number of days ago you want the price for
         coins = {'BTC': 'bitcoin', 'ETH': 'ethereum', 'DOGE': 'dogecoin', 'LTC': 'litecoin'}
@@ -94,6 +102,32 @@ class UserInterface():
             return max(highList)
         elif highestOrLowest == "lowest":
             return min(lowList)
+    '''
+
+    # Screen scraping from investing.com
+    @staticmethod
+    def highest_or_lowest(coin, daysAgo, highestOrLowest):  # Input currency and the number of days ago you want the price for
+        coins = {'BTC': 'bitcoin', 'ETH': 'ethereum', 'DOGE': 'dogecoin', 'LTC': 'litecoin'}
+        coin = coins[coin]
+        highList = []
+        lowList = []
+        # Specify a header to bypass the error
+        hdr = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
+        r = requests.get(f'https://uk.investing.com/crypto/{coin}/historical-data',
+                         headers=hdr)  # Get the correct website
+        soup = bs4.BeautifulSoup(r.text, "lxml")  # Get the HTMl
+        c = soup.find_all('tr')
+        # Remove unecessary data
+        c = c[1:len(c) - 1]
+        for i in range(daysAgo + 1):
+            highList.append(c[i].text.split()[5].replace(',', ''))
+            lowList.append(c[i].text.split()[6].replace(',', ''))
+        # Return the needed value
+        if highestOrLowest == "highest":
+            return max(highList)
+        elif highestOrLowest == "lowest":
+            return min(lowList)
 
     def add_alert_type3(self, coin, daysAgo, highestOrLowest):
         # First find the target price
@@ -105,11 +139,12 @@ class UserInterface():
         tpaIDs = c.fetchall()
         done = False
         while not done:
-            tpaID = '3' + coin[0:1] + str(daysAgo)[0:1] + self.email[0:1] + str(random.randint(0,9)) + str(random.randint(0,9))
+            tpaID = '3' + coin[0:1] + str(daysAgo)[0:1] + self.email[0:1] + str(random.randint(0, 9)) + str(
+                random.randint(0, 9))
             if tpaID not in tpaIDs:
                 done = True
         # Now create the message
-        message = f'the price of {coin} has reached the {highestOrLowest} price from {daysAgo} days before {datetime.datetime.now().strftime("%Y-%m-%d")}'
+        message = f'the price of {coin} has reached the {highestOrLowest} price from {daysAgo} days before {datetime.datetime.now().strftime("%Y-%m-%d")}.'
         # Now add everything to the database
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
         db.commit()
@@ -124,11 +159,12 @@ class UserInterface():
         spaIDs = c.fetchall()
         done = False
         while not done:
-            spaID = '4' + coin[0:1] + str(minutes)[0:1] + self.email[0:1] + str(random.randint(0, 9)) + str(random.randint(0, 9))
+            spaID = '4' + coin[0:1] + str(minutes)[0:1] + self.email[0:1] + str(random.randint(0, 9)) + str(
+                random.randint(0, 9))
             if spaID not in spaIDs:
                 done = True
         # Create the message
-        message = f'the price of {coin} has remained stagnant for {minutes} minutes'
+        message = f'the price of {coin} has remained stagnant for {minutes} minutes.'
         # Now add to the database
         c.execute('''INSERT INTO SPA VALUES (?, ?, ?, ?, ?) ''', (spaID, coin, minutes, message, self.email))
         db.commit()
@@ -145,8 +181,9 @@ def display_prices():
     db.close()
     display = []
     for record in priceData:
-        display.append(record[0] + ':$ ' + str(record[1]))
+        display.append(record[0] + ': $' + str(record[1]))
     return display
+
 
 def delete_alert(alertID):
     # Delete the alert from the correct table
@@ -159,6 +196,7 @@ def delete_alert(alertID):
     db.commit()
     db.close()
 
+
 def login(email, password):
     db = sqlite3.Connection("UsersAndAlerts.db")
     c = db.cursor()
@@ -170,6 +208,7 @@ def login(email, password):
         return False, None
     else:
         return True, 'You have provided the incorrect details!'
+
 
 def register(demail, dpassword):
     if '@' not in demail[1:]:  # Check if email is valid
@@ -192,5 +231,3 @@ def register(demail, dpassword):
         else:
             db.close()
             return True, 'This email is already registered!'
-
-
