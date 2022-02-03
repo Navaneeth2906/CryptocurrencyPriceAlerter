@@ -85,11 +85,14 @@ def add_alert_type1():
     elif float(price) > 1000000:  # If the price is too big
         flash('Enter a price less than 1 million', 'danger')
     else:
-        price = str(round(float(price), 4))  # round to 4 dp
-        alertID = user.add_alert_type1(coin, price)
-        alert = AlertMonitor(alertID)
-        executor.submit(alert.monitor_alert)
-        flash('The alert has been added successfully!', 'success')
+        try:
+            price = str(round(float(price), 4))  # round to 4 dp
+            alertID = user.add_alert_type1(coin, price)
+            alert = AlertMonitor(alertID)
+            executor.submit(alert.monitor_alert)
+            flash('The alert has been added successfully!', 'success')
+        except:  # Validation for webpage in case of an unexpected internal error
+            flash('This alert cannot be added right now - server error.', 'danger')
     return redirect('/addAlerts')
 
 
@@ -110,11 +113,14 @@ def add_alert_type2():
     elif float(percentage) > 1000000:  # If the percentage is too big
         flash('Enter a percentage less than 1 million', 'danger')
     else:
-        percentage = round(float(percentage), 2)  # round to 2 dp
-        alertID = user.add_alert_type2(coin, increasedOrDecreased, percentage)
-        alert = AlertMonitor(alertID)
-        executor.submit(alert.monitor_alert)
-        flash('The alert has been added successfully!', 'success')
+        try:
+            percentage = round(float(percentage), 2)  # round to 2 dp
+            alertID = user.add_alert_type2(coin, increasedOrDecreased, percentage)
+            alert = AlertMonitor(alertID)
+            executor.submit(alert.monitor_alert)
+            flash('The alert has been added successfully!', 'success')
+        except:  # Validation for webpage in case of an unexpected internal error
+            flash('This alert cannot be added right now - server error.', 'danger')
     return redirect('/addAlerts')
 
 
@@ -138,8 +144,8 @@ def add_alert_type3():
             alert = AlertMonitor(alertID)
             executor.submit(alert.monitor_alert)
             flash('The alert has been added successfully!', 'success')
-        except:
-            flash('This alert cannot be added right now - server error', 'danger')
+        except:  # Validation for webpage in case of an unexpected internal error
+            flash('This alert cannot be added right now - server error.', 'danger')
     return redirect('/addAlerts')
 
 
@@ -157,10 +163,13 @@ def add_alert_type4():
     elif float(minutes) > 1000000:  # If the number of minutes is too big
         flash('Enter a number of minutes less than 1 million', 'danger')
     else:
-        alertID = user.add_alert_type4(coin, float(minutes))
-        alert = AlertMonitor(alertID)
-        executor.submit(alert.monitor_alert)
-        flash('The alert has been added successfully!', 'success')
+        try:
+            alertID = user.add_alert_type4(coin, float(minutes))
+            alert = AlertMonitor(alertID)
+            executor.submit(alert.monitor_alert)
+            flash('The alert has been added successfully!', 'success')
+        except:  # Validation for webpage in case of an unexpected internal error
+            flash('This alert cannot be added right now - server error.', 'danger')
     return redirect('/addAlerts')
 
 
