@@ -70,7 +70,7 @@ class UserInterface():
             if tpaID not in tpaIDs:
                 done = True
         # Now create the message
-        message = f'the price of {coin} has {increasedOrDecreased} by {percentage}% from the price on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.'
+        message = f'the price of {coin} has {increasedOrDecreased} by {percentage}% from the price on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} to a price of: ${price}.'
         # Now add everything to the database
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
         db.commit()
@@ -144,7 +144,7 @@ class UserInterface():
             if tpaID not in tpaIDs:
                 done = True
         # Now create the message
-        message = f'the price of {coin} has reached the {highestOrLowest} price from {daysAgo} days before {datetime.datetime.now().strftime("%Y-%m-%d")}.'
+        message = f'the price of {coin} has reached the {highestOrLowest} price from {daysAgo} days before {datetime.datetime.now().strftime("%Y-%m-%d")} which is: ${price}.'
         # Now add everything to the database
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
         db.commit()

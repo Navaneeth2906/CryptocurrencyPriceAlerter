@@ -43,6 +43,11 @@ def registerpage():
             return redirect('/welcome')
     return render_template("register.html")
 
+@myapp.route('/logout')
+def logout():
+    #  Remove data from sessions
+    session.pop('email', None)
+    return redirect('/')
 
 @myapp.route("/welcome", methods=["GET"])
 def welcomepage():
@@ -80,7 +85,7 @@ def add_alert_type1():
     elif float(price) > 1000000:  # If the price is too big
         flash('Enter a price less than 1 million', 'danger')
     else:
-        price = str(round(float(price), 2))  # round to 2 dp
+        price = str(round(float(price), 4))  # round to 4 dp
         alertID = user.add_alert_type1(coin, price)
         alert = AlertMonitor(alertID)
         executor.submit(alert.monitor_alert)

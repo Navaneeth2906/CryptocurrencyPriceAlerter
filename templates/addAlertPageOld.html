@@ -35,6 +35,28 @@
     </br>
 </form>
 
+
+<form action='/addAlertType1'  method = 'POST'>
+        <h3>Add Alert Type 1 </h3>
+    <p>Coin:</p>
+            <select name = "coin" class="form-select" aria-label="Default select example">
+    <option selected>Select Cryptocurrency</option>
+    <option value="BTC">BTC</option>
+    <option value="ETH">ETH</option>
+    <option value="LTC">LTC</option>
+    <option value="DOGE">DOGE</option>
+    </select>
+    </br>
+    </br>
+    <p>Price:</p>
+    <input type = "text" name = "price">
+    </br>
+    </br>
+    <input class="btn btn-primary" value = "Add Alert" type = "Submit">
+    </br>
+    </br>
+</form>
+
 <!-- Interface to add alert type 2 -->
 <h3>Add a percentage change alert:</h3>
 <form action='/addAlertType2'  method = 'POST'>
@@ -80,7 +102,7 @@
     price from
     <select name = "daysAgo" class="form-select" aria-label="Default select example">
     <option selected>Select Days Ago</option>
-    {% for i in range(1, 31) %}
+    {% for i in range(0, 31) %}
     <option value="{{i}}">{{i}}</option>
     {% endfor %}
     </select>
@@ -115,3 +137,4 @@
 </div>
 
 {% endblock %}
+
