@@ -133,10 +133,13 @@ def add_alert_type3():
     elif highestOrLowest == 'highest/lowest':  # If they have not selected highest or lowest
         flash("Please select 'highest' or 'lowest'", 'danger')
     else:
-        alertID = user.add_alert_type3(coin, int(daysAgo), highestOrLowest)
-        alert = AlertMonitor(alertID)
-        executor.submit(alert.monitor_alert)
-        flash('The alert has been added successfully!', 'success')
+        try:
+            alertID = user.add_alert_type3(coin, int(daysAgo), highestOrLowest)
+            alert = AlertMonitor(alertID)
+            executor.submit(alert.monitor_alert)
+            flash('The alert has been added successfully!', 'success')
+        except:
+            flash('This alert cannot be added right now - server error')
     return redirect('/addAlerts')
 
 
