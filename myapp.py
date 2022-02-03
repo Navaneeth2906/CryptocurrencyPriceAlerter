@@ -139,7 +139,7 @@ def add_alert_type3():
             executor.submit(alert.monitor_alert)
             flash('The alert has been added successfully!', 'success')
         except:
-            flash('This alert cannot be added right now - server error')
+            flash('This alert cannot be added right now - server error', 'danger')
     return redirect('/addAlerts')
 
 
