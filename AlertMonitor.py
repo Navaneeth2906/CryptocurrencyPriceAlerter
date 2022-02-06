@@ -57,8 +57,11 @@ class AlertMonitor():
             price = c.fetchall()[0][0]
             db.close()
             if (price <= (tpa[0][2] * 1.001)) and (price >= (tpa[0][2] * 0.999)):  # within +/- 0.1%
-                self.email_alert(f'Alert: {tpa[0][3]}', tpa[0][4])
-                print(f'To {tpa[0][4]} sent "Alert: {tpa[0][3]}"')
+                try:
+                    self.email_alert(f'Alert: {tpa[0][3]}', tpa[0][4])  # Send email
+                    print(f'To {tpa[0][4]} sent "Alert: {tpa[0][3]}"')
+                except:   # If there is an error sending the email
+                    print(f"Email to {tpa[0][4]} with message '{tpa[0][3]}' failed to send.")
                 self.delete_alert()
             time.sleep(10)
 
@@ -103,8 +106,11 @@ class AlertMonitor():
                 timeStagnant = 0
             # Check if limit has been reached
             if (timeStagnant / 60) >= spa[0][2]:
-                self.email_alert(f"Alert: {spa[0][3]}", spa[0][4])  # Send email
-                print(f'To {spa[0][4]} sent "Alert: {spa[0][3]}"')
+                try:
+                    self.email_alert(f"Alert: {spa[0][3]}", spa[0][4])  # Send email
+                    print(f'To {spa[0][4]} sent "Alert: {spa[0][3]}"')
+                except:  # If there is an error sending the email
+                    print(f"Email to {spa[0][4]} with message '{spa[0][3]}' failed to send.")
                 timeStagnant = 0  # Reset counter
                 self.delete_alert()
 
