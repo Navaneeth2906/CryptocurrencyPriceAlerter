@@ -128,4 +128,3 @@ class AlertMonitor():
             self.monitor_spa()
         else:
             self.monitor_tpa()
-
