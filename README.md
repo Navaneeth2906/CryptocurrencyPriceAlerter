@@ -1,5 +1,5 @@
 # CryptocurrencyPriceAlerter
-<p>This is a web app through which you can set alerts to inform you via email about certain changes in the prices of cryptocurrencies (namely BTC, ETH, LTC, DOGE).</p>
+<p>This is a web app through which you can set alerts to inform you via email about material changes in the prices of cryptocurrencies (namely BTC, ETH, LTC, DOGE).</p>
 <p>The types of alerts you can set include:</p>
 <ul>
   <li>A target price alert where you will be notified when the price of a cryptocurrency reaches a specific entered price.</li>
