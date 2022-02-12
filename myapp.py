@@ -11,7 +11,7 @@ myapp.secret_key = "abc"
 
 @myapp.route("/")
 def homepage():
-    return render_template("homepage.html")  # This is the login page that they first see
+    return render_template("LoginPage.html")  # This is the login page that they first see
 
 
 @myapp.route("/", methods=["POST"])
@@ -22,7 +22,7 @@ def checklogin():
     error, message = login(email, password)
     if error:
         flash(message)  # Output Alert
-        return render_template("homepage.html", error=True)
+        return render_template("LoginPage.html", error=True)
     else:
         session['email'] = email
         return redirect('/welcome')
@@ -37,11 +37,11 @@ def registerpage():
         error, message = register(demail, dpassword)
         if error:
             flash(message)  # Output alert
-            return render_template("register.html", error=True)
+            return render_template("RegistrationPage.html", error=True)
         else:
             session['email'] = demail  # Ensure that email is passed onto the next page
             return redirect('/welcome')
-    return render_template("register.html")
+    return render_template("RegistrationPage.html")
 
 @myapp.route('/logout')
 def logout():
@@ -55,7 +55,7 @@ def welcomepage():
     email = session.get('email', None)
     user = UserInterface(email)
     ids, alerts = user.display_alerts()
-    return render_template("loggedIn.html", prices=display_prices(), ids=ids, alerts=alerts)
+    return render_template("MainPage.html", prices=display_prices(), ids=ids, alerts=alerts)
 
 @myapp.route('/delete/<id>')
 def delete(id):
@@ -68,7 +68,7 @@ def delete(id):
 @myapp.route('/addAlerts')
 def add_alerts_page():
     # Display the page
-    return render_template("addAlertPage.html")
+    return render_template("AddAlertsPage.html")
 
 
 @myapp.route('/addAlertType1', methods=['POST'])
@@ -114,7 +114,7 @@ def add_alert_type2():
         flash('Enter a percentage less than 1 million', 'danger')
     else:
         try:
-            percentage = round(float(percentage), 2)  # round to 2 dp
+            percentage = float(percentage)
             alertID = user.add_alert_type2(coin, increasedOrDecreased, percentage)
             alert = AlertMonitor(alertID)
             executor.submit(alert.monitor_alert)
@@ -164,7 +164,7 @@ def add_alert_type4():
         flash('Enter a number of minutes less than 1 million', 'danger')
     else:
         try:
-            alertID = user.add_alert_type4(coin, float(minutes))
+            alertID = user.add_alert_type4(coin, round(float(minutes), 2))
             alert = AlertMonitor(alertID)
             executor.submit(alert.monitor_alert)
             flash('The alert has been added successfully!', 'success')
