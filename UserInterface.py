@@ -131,8 +131,7 @@ class UserInterface():
 
     def add_alert_type3(self, coin, daysAgo, highestOrLowest):
         # First find the target price
-        '''price = self.highest_or_lowest(coin, daysAgo, highestOrLowest)'''
-        price = 2161.55
+        price = self.highest_or_lowest(coin, daysAgo, highestOrLowest)
         # Now create a unique ID
         db = sqlite3.Connection("UsersAndAlerts.db")
         c = db.cursor()
