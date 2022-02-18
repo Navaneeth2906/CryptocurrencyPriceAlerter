@@ -1,6 +1,5 @@
-import sqlite3, random, datetime, bs4, requests
+import random, datetime, bs4
 from PriceMonitor import *
-from bs4 import BeautifulSoup
 
 
 class UserInterface():
@@ -58,6 +57,7 @@ class UserInterface():
             price += price * (percentage / 100)
         elif increasedOrDecreased == "decreased":
             price -= price * (percentage / 100)
+        price = round(price, 4)
         # Now create a unique ID
         db = sqlite3.Connection("UsersAndAlerts.db")
         c = db.cursor()
@@ -65,12 +65,12 @@ class UserInterface():
         tpaIDs = c.fetchall()
         done = False
         while not done:
-            tpaID = '2' + coin[0:1] + str(percentage)[0:1] + self.email[0:1] + str(random.randint(0, 9)) + str(
-                random.randint(0, 9))
+            tpaID = '2' + coin[0:1] + str(percentage)[0:1] + self.email[0:1] + str(random.randint(0, 9)) + str(random.randint(0, 9))
             if tpaID not in tpaIDs:
                 done = True
         # Now create the message
-        message = f'the price of {coin} has {increasedOrDecreased} by {percentage}% from the price on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} to a price of: ${price}.'
+        message = f'the price of {coin} has {increasedOrDecreased} by {percentage}% from the' \
+                  f' price on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} to a price of: ${price}.'
         # Now add everything to the database
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
         db.commit()
@@ -78,7 +78,7 @@ class UserInterface():
         return tpaID
 
     '''
-    # Screen scraping with Digital Coin
+    # Screen scraping with Digital Coin (has been disabled)
     @staticmethod
     def highest_or_lowest(coin, daysAgo, highestOrLowest):  # Input currency and the number of days ago you want the price for
         coins = {'BTC': 'bitcoin', 'ETH': 'ethereum', 'DOGE': 'dogecoin', 'LTC': 'litecoin'}
@@ -111,7 +111,7 @@ class UserInterface():
         coin = coins[coin]
         highList = []
         lowList = []
-        # Specify a header to bypass the error
+        #  Specify a header to make it clear the browser and OS we are using
         hdr = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
         r = requests.get(f'https://uk.investing.com/crypto/{coin}/historical-data',
@@ -131,7 +131,8 @@ class UserInterface():
 
     def add_alert_type3(self, coin, daysAgo, highestOrLowest):
         # First find the target price
-        price = self.highest_or_lowest(coin, daysAgo, highestOrLowest)
+        '''price = self.highest_or_lowest(coin, daysAgo, highestOrLowest)'''
+        price = 2161.55
         # Now create a unique ID
         db = sqlite3.Connection("UsersAndAlerts.db")
         c = db.cursor()
@@ -144,7 +145,8 @@ class UserInterface():
             if tpaID not in tpaIDs:
                 done = True
         # Now create the message
-        message = f'the price of {coin} has reached the {highestOrLowest} price from {daysAgo} days before {datetime.datetime.now().strftime("%Y-%m-%d")} which is: ${price}.'
+        message = f'the price of {coin} has reached the {highestOrLowest} price ' \
+                  f'from {daysAgo} days before {datetime.datetime.now().strftime("%Y-%m-%d")} which is: ${price}.'
         # Now add everything to the database
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
         db.commit()
@@ -231,3 +233,4 @@ def register(demail, dpassword):
         else:
             db.close()
             return True, 'This email is already registered!'
+
