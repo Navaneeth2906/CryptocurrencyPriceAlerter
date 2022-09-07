@@ -1,9 +1,6 @@
-from sql import *
-create_databases()
+
 from AlertMonitor import *
 import concurrent.futures
-
-
 
 def all_prices_check():
     bitcoin = PriceMonitor('BTC')

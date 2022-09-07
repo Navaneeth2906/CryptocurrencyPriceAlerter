@@ -1,7 +1,6 @@
 from sql import *
 create_databases()
-from AlertMonitor import *
-import concurrent.futures
+from Main import *
 from flask import Flask, render_template, request, flash, redirect, session
 
 executor = concurrent.futures.ThreadPoolExecutor()
