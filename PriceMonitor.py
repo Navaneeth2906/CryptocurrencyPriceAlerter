@@ -23,13 +23,6 @@ class PriceMonitor():
             db.commit()
             db.close()
 
-bitcoin = PriceMonitor('BTC')
-ethereum = PriceMonitor('ETH')
-litecoin = PriceMonitor('LTC')
-dogecoin = PriceMonitor('DOGE')
-bitcoin.update_price()
-ethereum.update_price()
-litecoin.update_price()
-dogecoin.update_price()
+
 
 

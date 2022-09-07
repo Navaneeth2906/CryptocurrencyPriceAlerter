@@ -2,6 +2,7 @@ from sql import *
 create_databases()
 from Main import *
 from flask import Flask, render_template, request, flash, redirect, session
+import concurrent.futures
 
 executor = concurrent.futures.ThreadPoolExecutor()
 
@@ -88,9 +89,7 @@ def add_alert_type1():
     else:
         try:
             price = str(round(float(price), 4))  # round to 4 dp
-            alertID = user.add_alert_type1(coin, price, greaterOrLess)
-            alert = AlertMonitor(alertID)
-            executor.submit(alert.monitor_alert)
+            user.add_alert_type1(coin, price, greaterOrLess)
             flash('The alert has been added successfully!', 'success')
         except:  # Validation for webpage in case of an unexpected internal error
             flash('This alert cannot be added right now - server error.', 'danger')
@@ -116,9 +115,7 @@ def add_alert_type2():
     else:
         try:
             percentage = float(percentage)
-            alertID = user.add_alert_type2(coin, increasedOrDecreased, percentage)
-            alert = AlertMonitor(alertID)
-            executor.submit(alert.monitor_alert)
+            user.add_alert_type2(coin, increasedOrDecreased, percentage)
             flash('The alert has been added successfully!', 'success')
         except:  # Validation for webpage in case of an unexpected internal error
             flash('This alert cannot be added right now - server error.', 'danger')
@@ -141,9 +138,7 @@ def add_alert_type3():
         flash("Please select 'surpassed the highest' or 'subsided the lowest'", 'danger')
     else:
         try:
-            alertID = user.add_alert_type3(coin, int(daysAgo), highestOrLowest)
-            alert = AlertMonitor(alertID)
-            executor.submit(alert.monitor_alert)
+            user.add_alert_type3(coin, int(daysAgo), highestOrLowest)
             flash('The alert has been added successfully!', 'success')
         except:  # Validation for webpage in case of an unexpected internal error
             flash('This alert cannot be added right now - server error.', 'danger')

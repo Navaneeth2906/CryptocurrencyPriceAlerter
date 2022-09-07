@@ -44,7 +44,7 @@ class UserInterface():
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?, ?) ''', (tpaID, coin, price, greaterOrLess, message, self.email))
         db.commit()
         db.close()
-        return tpaID
+
 
     def add_alert_type2(self, coin, increasedOrDecreased, percentage):
         # First find the target price
@@ -76,7 +76,7 @@ class UserInterface():
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?, ?) ''', (tpaID, coin, price, map[increasedOrDecreased],message, self.email))
         db.commit()
         db.close()
-        return tpaID
+
 
     '''
     # Screen scraping with Digital Coin (has been disabled)
@@ -152,7 +152,7 @@ class UserInterface():
         c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?, ?) ''', (tpaID, coin, price, map[highestOrLowest], message, self.email))
         db.commit()
         db.close()
-        return tpaID
+
 
     def add_alert_type4(self, coin, minutes):
         # Create a unique ID

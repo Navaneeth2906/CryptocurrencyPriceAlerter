@@ -42,37 +42,20 @@ class AlertMonitor():
         server.quit()
 
 
-    def monitor_tpa(self):
-        # Retrieve alert data
-        db = sqlite3.Connection("UsersAndAlerts.db")
+    def monitor_tpa(self, row):
+        db = sqlite3.Connection("Prices.db")
         c = db.cursor()
-        c.execute('''SELECT * FROM TPA WHERE TPAID = ?''', (self.alertID,))
-        tpa = c.fetchall()
+        c.execute('''SELECT Price FROM CurrentPrice WHERE Cryptocurrency = ?''', (row[1],))
+        price = c.fetchall()[0][0]
         db.close()
-        # Continuously monitor alert
-        while True:
-            db = sqlite3.Connection("Prices.db")
-            c = db.cursor()
-            c.execute('''SELECT Price FROM CurrentPrice WHERE Cryptocurrency = ?''', (tpa[0][1],))
-            price = c.fetchall()[0][0]
-            db.close()
-            if ((price <= tpa[0][2]) and (tpa[0][3] == 'less')) or ((tpa[0][3] == 'greater ') and (price >= tpa[0][2])):
-                try:
-                    self.email_alert(f'Alert: {tpa[0][4]} The price is now ${price}.', tpa[0][5])  # Send email
-                    print(f'To {tpa[0][5]} sent "Alert: {tpa[0][4]}" The price is now ${price}.')
-                except:   # If there is an error sending the email
-                    print(f"Email to {tpa[0][5]} with message 'Alert: {tpa[0][4]} The price is now ${price}.' failed to send.")
-                self.delete_alert()
-            time.sleep(10)
+        if (price <= row[2] and row[3] == 'less') or (price >= row[2] and row[3] == 'greater'):
+            try:
+                self.email_alert(f'Alert: {row[4]} The price is now ${price}.', row[5])  # Send email
+                print(f'To {row[5]} sent "Alert: {row[4]}" The price is now ${price}.')
+            except:  # If there is an error sending the email
+                print(f"Email to {row[5]} with message 'Alert: {row[4]} The price is now ${price}.' failed to send.")
+            self.delete_alert()
 
-            # Check if this alert has been deleted
-            db = sqlite3.Connection("UsersAndAlerts.db")
-            c = db.cursor()
-            c.execute('''SELECT * FROM TPA WHERE TPAID = ?''', (self.alertID,))
-            tpa = c.fetchall()
-            db.close()
-            if len(tpa) == 0:
-                break
 
 
     def monitor_spa(self):
@@ -128,5 +111,4 @@ class AlertMonitor():
             self.monitor_spa()
         else:
             self.monitor_tpa()
-
 
