@@ -1,7 +1,8 @@
+from sql import *
+create_databases()
 from AlertMonitor import *
-from PriceMonitor import *
-from UserInterface import *
 import concurrent.futures
+
 
 
 def all_prices_check():
@@ -19,3 +20,5 @@ def all_prices_check():
 
 executor = concurrent.futures.ThreadPoolExecutor()
 executor.submit(all_prices_check)
+
+

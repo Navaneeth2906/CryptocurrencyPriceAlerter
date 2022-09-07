@@ -26,7 +26,7 @@ class UserInterface():
             messages.append(f'Alert me when {line[1]}')
         return ids, messages
 
-    def add_alert_type1(self, coin, price):
+    def add_alert_type1(self, coin, price, greaterOrLess):
         # First create a unique ID
         db = sqlite3.Connection("UsersAndAlerts.db")
         c = db.cursor()
@@ -39,9 +39,9 @@ class UserInterface():
             if tpaID not in tpaIDs:
                 done = True
         # Now create an appropriate message
-        message = f'the price of {coin} has reached ${price}.'
+        message = f'the price of {coin} is {greaterOrLess} than ${price}.'
         # Now add everything to the database
-        c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
+        c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?, ?) ''', (tpaID, coin, price, greaterOrLess, message, self.email))
         db.commit()
         db.close()
         return tpaID
@@ -69,10 +69,11 @@ class UserInterface():
             if tpaID not in tpaIDs:
                 done = True
         # Now create the message
+        map = {'increased': 'greater', 'decreased': 'less'}
         message = f'the price of {coin} has {increasedOrDecreased} by {percentage}% from the' \
-                  f' price on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} to a price of: ${price}.'
+                  f' price on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} to a price {map[increasedOrDecreased]} than: ${price}.'
         # Now add everything to the database
-        c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
+        c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?, ?) ''', (tpaID, coin, price, map[increasedOrDecreased],message, self.email))
         db.commit()
         db.close()
         return tpaID
@@ -98,9 +99,9 @@ class UserInterface():
             if len(highList) == daysAgo:  # Stop at the correct number of days ago
                 break
         # Return the needed value
-        if highestOrLowest == "highest":
+        if highestOrLowest == "surpassed the highest":
             return max(highList)
-        elif highestOrLowest == "lowest":
+        elif highestOrLowest == "subsided the lowest":
             return min(lowList)
     '''
 
@@ -116,7 +117,7 @@ class UserInterface():
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
         r = requests.get(f'https://uk.investing.com/crypto/{coin}/historical-data',
                          headers=hdr)  # Get the correct website
-        soup = bs4.BeautifulSoup(r.text, "lxml")  # Get the HTMl
+        soup = bs4.BeautifulSoup(r.text, "html.parser")  # Get the HTMl
         c = soup.find_all('tr')
         # Remove unecessary data
         c = c[1:len(c) - 1]
@@ -124,9 +125,9 @@ class UserInterface():
             highList.append(c[i].text.split()[5].replace(',', ''))
             lowList.append(c[i].text.split()[6].replace(',', ''))
         # Return the needed value
-        if highestOrLowest == "highest":
+        if highestOrLowest == "surpassed the highest":
             return max(highList)
-        elif highestOrLowest == "lowest":
+        elif highestOrLowest == "subsided the lowest":
             return min(lowList)
 
     def add_alert_type3(self, coin, daysAgo, highestOrLowest):
@@ -144,10 +145,11 @@ class UserInterface():
             if tpaID not in tpaIDs:
                 done = True
         # Now create the message
-        message = f'the price of {coin} has reached the {highestOrLowest} price ' \
+        message = f'the price of {coin} has {highestOrLowest} price ' \
                   f'from {daysAgo} days before {datetime.datetime.now().strftime("%Y-%m-%d")} which is: ${price}.'
+        map = {'surpassed the highest': 'greater', 'subsided the lowest': 'less'}
         # Now add everything to the database
-        c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?) ''', (tpaID, coin, price, message, self.email))
+        c.execute('''INSERT INTO TPA VALUES (?, ?, ?, ?, ?, ?) ''', (tpaID, coin, price, map[highestOrLowest], message, self.email))
         db.commit()
         db.close()
         return tpaID
@@ -232,4 +234,27 @@ def register(demail, dpassword):
         else:
             db.close()
             return True, 'This email is already registered!'
+
+def highest_or_lowest(coin, daysAgo, highestOrLowest):  # Input currency and the number of days ago you want the price for
+    coins = {'BTC': 'bitcoin', 'ETH': 'ethereum', 'DOGE': 'dogecoin', 'LTC': 'litecoin'}
+    coin = coins[coin]
+    highList = []
+    lowList = []
+    #  Specify a header to make it clear the browser and OS we are using
+    hdr = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
+    r = requests.get(f'https://uk.investing.com/crypto/{coin}/historical-data',
+                     headers=hdr)  # Get the correct website
+    soup = bs4.BeautifulSoup(r.text, "html.parser")  # Get the HTMl
+    c = soup.find_all('tr')
+    # Remove unecessary data
+    c = c[1:len(c) - 1]
+    for i in range(daysAgo + 1):
+        highList.append(c[i].text.split()[5].replace(',', ''))
+        lowList.append(c[i].text.split()[6].replace(',', ''))
+    # Return the needed value
+    if highestOrLowest == "highest":
+        return max(highList)
+    elif highestOrLowest == "lowest":
+        return min(lowList)
 

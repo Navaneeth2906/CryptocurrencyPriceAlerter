@@ -36,7 +36,13 @@
     <option value="LTC">LTC</option>
     <option value="DOGE">DOGE</option>
     </select>
-    has reached $ <input type = "text" name = "price">.</p>
+    is
+    <select name = "greaterOrLess" class="form-select" aria-label="Default select example">
+    <option selected>greater/less</option>
+    <option value="greater">greater</option>
+    <option value="less">less</option>
+    </select>
+    than $ <input type = "text" name = "price">.</p>
     <input class="btn btn-success" value = "Add Alert" type = "Submit">
     </br>
     </br>
@@ -90,11 +96,11 @@
     <option value="LTC">LTC</option>
     <option value="DOGE">DOGE</option>
     </select>
-    reaches the
+    has
     <select name = "highestOrLowest" class="form-select" aria-label="Default select example">
-    <option selected>highest/lowest</option>
-    <option value="highest">highest</option>
-    <option value="lowest">lowest</option>
+    <option selected>surpassed the highest/subsided the lowest</option>
+    <option value="surpassed the highest">surpassed the highest</option>
+    <option value="subsided the lowest">subsided the lowest</option>
     </select>
     price from
     <select name = "daysAgo" class="form-select" aria-label="Default select example">

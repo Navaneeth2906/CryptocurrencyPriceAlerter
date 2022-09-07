@@ -1,8 +1,8 @@
-import sqlite3
+from UserInterface import *
 import smtplib
 import time
 from email.message import EmailMessage
-from UserInterface import *
+
 
 class AlertMonitor():
 
@@ -56,12 +56,12 @@ class AlertMonitor():
             c.execute('''SELECT Price FROM CurrentPrice WHERE Cryptocurrency = ?''', (tpa[0][1],))
             price = c.fetchall()[0][0]
             db.close()
-            if (price <= (tpa[0][2] * 1.001)) and (price >= (tpa[0][2] * 0.999)):  # within +/- 0.1%
+            if ((price <= tpa[0][2]) and (tpa[0][3] == 'less')) or ((tpa[0][3] == 'greater ') and (price >= tpa[0][2])):
                 try:
-                    self.email_alert(f'Alert: {tpa[0][3]}', tpa[0][4])  # Send email
-                    print(f'To {tpa[0][4]} sent "Alert: {tpa[0][3]}"')
+                    self.email_alert(f'Alert: {tpa[0][4]} The price is now ${price}.', tpa[0][5])  # Send email
+                    print(f'To {tpa[0][5]} sent "Alert: {tpa[0][4]}" The price is now ${price}.')
                 except:   # If there is an error sending the email
-                    print(f"Email to {tpa[0][4]} with message '{tpa[0][3]}' failed to send.")
+                    print(f"Email to {tpa[0][5]} with message 'Alert: {tpa[0][4]} The price is now ${price}.' failed to send.")
                 self.delete_alert()
             time.sleep(10)
 
@@ -110,7 +110,7 @@ class AlertMonitor():
                     self.email_alert(f"Alert: {spa[0][3]}", spa[0][4])  # Send email
                     print(f'To {spa[0][4]} sent "Alert: {spa[0][3]}"')
                 except:  # If there is an error sending the email
-                    print(f"Email to {spa[0][4]} with message '{spa[0][3]}' failed to send.")
+                    print(f"Email to {spa[0][4]} with message 'Alert: {spa[0][3]}' failed to send.")
                 timeStagnant = 0  # Reset counter
                 self.delete_alert()
 
@@ -128,3 +128,5 @@ class AlertMonitor():
             self.monitor_spa()
         else:
             self.monitor_tpa()
+
+

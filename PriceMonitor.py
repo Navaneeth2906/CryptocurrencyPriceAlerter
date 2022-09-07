@@ -32,3 +32,4 @@ ethereum.update_price()
 litecoin.update_price()
 dogecoin.update_price()
 
+

@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, flash, redirect, session
-import concurrent.futures
+from sql import *
+create_databases()
 from AlertMonitor import *
-from UserInterface import *
+import concurrent.futures
+from flask import Flask, render_template, request, flash, redirect, session
 
 executor = concurrent.futures.ThreadPoolExecutor()
 
@@ -77,6 +78,7 @@ def add_alert_type1():
     email = session.get('email', None)
     user = UserInterface(email)
     coin = request.form.get('coin')
+    greaterOrLess = request.form.get('greaterOrLess')
     price = request.form['price'].replace(',', '')  # remove commas
     if coin == 'Select Cryptocurrency':  # If they have not selected a coin
         flash('Please select a coin', 'danger')
@@ -87,7 +89,7 @@ def add_alert_type1():
     else:
         try:
             price = str(round(float(price), 4))  # round to 4 dp
-            alertID = user.add_alert_type1(coin, price)
+            alertID = user.add_alert_type1(coin, price, greaterOrLess)
             alert = AlertMonitor(alertID)
             executor.submit(alert.monitor_alert)
             flash('The alert has been added successfully!', 'success')
@@ -136,8 +138,8 @@ def add_alert_type3():
         flash('Please select a coin', 'danger')
     elif daysAgo == 'Select Days Ago':  # If they have not number of days ago
         flash('Please select the number of days ago', 'danger')
-    elif highestOrLowest == 'highest/lowest':  # If they have not selected highest or lowest
-        flash("Please select 'highest' or 'lowest'", 'danger')
+    elif highestOrLowest == 'surpassed the highest/subsided the lowest':  # If they have not selected highest or lowest
+        flash("Please select 'surpassed the highest' or 'subsided the lowest'", 'danger')
     else:
         try:
             alertID = user.add_alert_type3(coin, int(daysAgo), highestOrLowest)
